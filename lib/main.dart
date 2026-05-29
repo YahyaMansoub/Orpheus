@@ -66,13 +66,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _playSong(Song song) async {
-    await _player.setFilePath(song.path);
-    await _player.play();
+    try {
+      await _player.setFilePath(song.path);
+      await _player.play();
 
-    setState(() {
-      _currentSong = song;
-      _isPlaying = true;
-    });
+      setState(() {
+        _currentSong = song;
+        _isPlaying = true;
+      });
+    } catch (e) {
+      debugPrint("Error playing song ${song.path}: $e");
+    }
   }
 
   Future<void> _togglePlayPause() async {
