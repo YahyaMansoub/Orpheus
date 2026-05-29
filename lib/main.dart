@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         _isPlaying = true;
       });
     } catch (e) {
-      print("Error playing song ${song.path}: $e");
+      debugPrint("Error playing song ${song.path}: $e");
     }
   }
 
