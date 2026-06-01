@@ -1,7 +1,6 @@
-// Scans the device library and lets users import selected audio.
+// Radar fallback screen. Real full-device scanning will be added later.
 
 import 'package:flutter/material.dart';
-import 'package:on_audio_query/on_audio_query.dart';
 
 import '../app/app_routes.dart';
 import '../controllers/library_controller.dart';
@@ -29,63 +28,62 @@ class RadarScreen extends StatefulWidget {
 
 class _RadarScreenState extends State<RadarScreen> {
   bool _isLoading = false;
-  bool _hasPermission = false;
   String? _error;
   List<AudioTrack> _tracks = [];
   final Set<String> _selectedIds = {};
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    final allowed = await widget.permissionService.ensureAudioPermission();
-    if (!allowed) {
-      setState(() {
-        _hasPermission = false;
-        _isLoading = false;
-      });
-      return;
-    }
-
-    try {
-      final tracks = await widget.radarService.queryTracks();
-      setState(() {
-        _tracks = tracks;
-        _hasPermission = true;
-      });
-    } catch (_) {
-      setState(() {
-        _error = 'Unable to scan your library right now.';
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
 
   bool _isAlreadyAdded(AudioTrack track) {
     return widget.libraryController.tracks.any((item) => item.id == track.id);
   }
 
+  Future<void> _pickTracks() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final allowed = await widget.permissionService.ensureAudioPermission();
+      if (!mounted) return;
+
+      if (!allowed) {
+        setState(() {
+          _error = 'Audio permission was not granted.';
+        });
+        return;
+      }
+
+      final tracks = await widget.radarService.pickAudioTracks();
+      if (!mounted) return;
+
+      setState(() {
+        _tracks = tracks;
+        _selectedIds.clear();
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _error = 'Unable to import audio files right now.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   Future<void> _addSelected() async {
     final selected = _tracks
         .where((track) => _selectedIds.contains(track.id))
+        .where((track) => !_isAlreadyAdded(track))
         .toList();
 
     await widget.libraryController.addTracks(selected);
 
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
 
     setState(() {
       _selectedIds.clear();
@@ -101,7 +99,12 @@ class _RadarScreenState extends State<RadarScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Radar')),
       drawer: const AppDrawer(currentRoute: AppRoutes.radar),
-      body: _buildBody(),
+      body: _buildBody(context),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _isLoading ? null : _pickTracks,
+        icon: const Icon(Icons.audio_file),
+        label: const Text('Select audio'),
+      ),
       bottomNavigationBar: _selectedIds.isEmpty
           ? null
           : SafeArea(
@@ -116,38 +119,9 @@ class _RadarScreenState extends State<RadarScreen> {
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
-    }
-
-    if (!_hasPermission) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.lock, size: 48),
-              const SizedBox(height: 12),
-              Text(
-                'Permission needed',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'Allow access to scan your device library.',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: _load,
-                child: const Text('Grant permission'),
-              ),
-            ],
-          ),
-        ),
-      );
     }
 
     if (_error != null) {
@@ -156,13 +130,15 @@ class _RadarScreenState extends State<RadarScreen> {
 
     if (_tracks.isEmpty) {
       return const EmptyState(
-        title: 'No audio found.',
-        subtitle: 'Radar did not find any compatible files.',
+        title: 'Radar fallback mode',
+        subtitle:
+            'Full-device scanning is not enabled yet. Use Select audio to choose files manually.',
+        icon: Icons.radar,
       );
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.only(bottom: 100),
+      padding: const EdgeInsets.only(bottom: 120),
       itemCount: _tracks.length,
       itemBuilder: (context, index) {
         final track = _tracks[index];
@@ -174,11 +150,13 @@ class _RadarScreenState extends State<RadarScreen> {
           onChanged: alreadyAdded
               ? null
               : (value) {
-                  if (value == true) {
-                    setState(() => _selectedIds.add(track.id));
-                  } else {
-                    setState(() => _selectedIds.remove(track.id));
-                  }
+                  setState(() {
+                    if (value == true) {
+                      _selectedIds.add(track.id);
+                    } else {
+                      _selectedIds.remove(track.id);
+                    }
+                  });
                 },
           title: Text(
             track.title,
@@ -190,15 +168,7 @@ class _RadarScreenState extends State<RadarScreen> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          secondary: track.artworkId == null
-              ? const Icon(Icons.audiotrack)
-              : QueryArtworkWidget(
-                  id: track.artworkId!,
-                  type: ArtworkType.AUDIO,
-                  artworkBorder: BorderRadius.circular(6),
-                  artworkQuality: FilterQuality.low,
-                  nullArtworkWidget: const Icon(Icons.audiotrack),
-                ),
+          secondary: const Icon(Icons.audiotrack),
         );
       },
       separatorBuilder: (_, _) => const Divider(height: 1),

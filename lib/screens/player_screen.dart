@@ -1,7 +1,6 @@
 // Full-screen player with artwork, progress, and controls.
 
 import 'package:flutter/material.dart';
-import 'package:on_audio_query/on_audio_query.dart';
 
 import '../controllers/player_controller.dart';
 import '../models/audio_track.dart';
@@ -64,17 +63,6 @@ class _Artwork extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size.width * 0.7;
-
-    if (track.artworkId != null && track.source == AudioSourceType.content) {
-      return QueryArtworkWidget(
-        id: track.artworkId!,
-        type: ArtworkType.AUDIO,
-        artworkBorder: BorderRadius.circular(16),
-        artworkQuality: FilterQuality.medium,
-        nullArtworkWidget: _placeholder(size, context),
-      );
-    }
-
     return _placeholder(size, context);
   }
 
