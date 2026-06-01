@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../controllers/library_controller.dart';
+import '../controllers/playlist_controller.dart';
 import '../controllers/player_controller.dart';
 import '../services/audio_library_service.dart';
 import '../services/audio_player_service.dart';
+import '../services/playlist_service.dart';
 import '../services/permission_service.dart';
 import '../services/radar_service.dart';
 import 'app_routes.dart';
@@ -25,6 +27,8 @@ class _OrpheusAppState extends State<OrpheusApp> {
   late final AudioPlayerService _playerService;
   late final LibraryController _libraryController;
   late final PlayerController _playerController;
+  late final PlaylistService _playlistService;
+  late final PlaylistController _playlistController;
   late final RadarService _radarService;
   late final PermissionService _permissionService;
 
@@ -35,6 +39,8 @@ class _OrpheusAppState extends State<OrpheusApp> {
     _playerService = AudioPlayerService();
     _libraryController = LibraryController(_libraryService)..loadLibrary();
     _playerController = PlayerController(_playerService);
+    _playlistService = PlaylistService(widget.prefs);
+    _playlistController = PlaylistController(_playlistService)..loadPlaylists();
     _radarService = RadarService();
     _permissionService = PermissionService();
   }
@@ -43,6 +49,7 @@ class _OrpheusAppState extends State<OrpheusApp> {
   void dispose() {
     _playerController.dispose();
     _libraryController.dispose();
+    _playlistController.dispose();
     _playerService.dispose();
     super.dispose();
   }
@@ -61,6 +68,7 @@ class _OrpheusAppState extends State<OrpheusApp> {
         settings,
         libraryController: _libraryController,
         playerController: _playerController,
+        playlistController: _playlistController,
         radarService: _radarService,
         permissionService: _permissionService,
       ),

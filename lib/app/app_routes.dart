@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/library_controller.dart';
+import '../controllers/playlist_controller.dart';
 import '../controllers/player_controller.dart';
 import '../screens/general_downloads_screen.dart';
 import '../screens/home_screen.dart';
@@ -23,6 +24,7 @@ class AppRoutes {
     RouteSettings settings, {
     required LibraryController libraryController,
     required PlayerController playerController,
+    required PlaylistController playlistController,
     required RadarService radarService,
     required PermissionService permissionService,
   }) {
@@ -47,7 +49,13 @@ class AppRoutes {
           ),
         );
       case playlists:
-        return MaterialPageRoute(builder: (_) => const PlaylistsScreen());
+        return MaterialPageRoute(
+          builder: (_) => PlaylistsScreen(
+            playlistController: playlistController,
+            libraryController: libraryController,
+            playerController: playerController,
+          ),
+        );
       case player:
         return PageRouteBuilder(
           pageBuilder: (_, _, _) =>
