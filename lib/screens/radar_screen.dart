@@ -1,5 +1,3 @@
-// Radar fallback screen. Real full-device scanning will be added later.
-
 import 'package:flutter/material.dart';
 
 import '../app/app_routes.dart';
@@ -36,7 +34,7 @@ class _RadarScreenState extends State<RadarScreen> {
     return widget.libraryController.tracks.any((item) => item.id == track.id);
   }
 
-  Future<void> _pickTracks() async {
+  Future<void> _scanDevice() async {
     setState(() {
       _isLoading = true;
       _error = null;
@@ -53,6 +51,35 @@ class _RadarScreenState extends State<RadarScreen> {
         return;
       }
 
+      final tracks = await widget.radarService.scanDeviceAudio();
+      if (!mounted) return;
+
+      setState(() {
+        _tracks = tracks;
+        _selectedIds.clear();
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _error = 'Unable to scan audio files.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _selectManually() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
       final tracks = await widget.radarService.pickAudioTracks();
       if (!mounted) return;
 
@@ -64,7 +91,7 @@ class _RadarScreenState extends State<RadarScreen> {
       if (!mounted) return;
 
       setState(() {
-        _error = 'Unable to import audio files right now.';
+        _error = 'Unable to select audio files.';
       });
     } finally {
       if (mounted) {
@@ -82,7 +109,6 @@ class _RadarScreenState extends State<RadarScreen> {
         .toList();
 
     await widget.libraryController.addTracks(selected);
-
     if (!mounted) return;
 
     setState(() {
@@ -99,12 +125,7 @@ class _RadarScreenState extends State<RadarScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Radar')),
       drawer: const AppDrawer(currentRoute: AppRoutes.radar),
-      body: _buildBody(context),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _isLoading ? null : _pickTracks,
-        icon: const Icon(Icons.audio_file),
-        label: const Text('Select audio'),
-      ),
+      body: _buildBody(),
       bottomNavigationBar: _selectedIds.isEmpty
           ? null
           : SafeArea(
@@ -116,10 +137,28 @@ class _RadarScreenState extends State<RadarScreen> {
                 ),
               ),
             ),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton.extended(
+            heroTag: 'scan-device',
+            onPressed: _isLoading ? null : _scanDevice,
+            icon: const Icon(Icons.radar),
+            label: const Text('Scan device'),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton.extended(
+            heroTag: 'select-audio',
+            onPressed: _isLoading ? null : _selectManually,
+            icon: const Icon(Icons.audio_file),
+            label: const Text('Select audio'),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildBody() {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -130,15 +169,14 @@ class _RadarScreenState extends State<RadarScreen> {
 
     if (_tracks.isEmpty) {
       return const EmptyState(
-        title: 'Radar fallback mode',
-        subtitle:
-            'Full-device scanning is not enabled yet. Use Select audio to choose files manually.',
+        title: 'Radar',
+        subtitle: 'Scan your device for audio files or select files manually.',
         icon: Icons.radar,
       );
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.only(bottom: 120),
+      padding: const EdgeInsets.only(bottom: 160),
       itemCount: _tracks.length,
       itemBuilder: (context, index) {
         final track = _tracks[index];
