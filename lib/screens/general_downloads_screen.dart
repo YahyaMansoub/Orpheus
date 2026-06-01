@@ -24,7 +24,7 @@ class GeneralDownloadsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('General Downloads')),
-      drawer: const AppDrawer(currentRoute: AppRoutes.generalDownloads),
+      drawer: const AppDrawer(currentRoute: AppRoutes.radar),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: libraryController.addTracksFromFilePicker,
