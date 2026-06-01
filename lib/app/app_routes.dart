@@ -5,45 +5,41 @@ import 'package:flutter/material.dart';
 import '../controllers/library_controller.dart';
 import '../controllers/playlist_controller.dart';
 import '../controllers/player_controller.dart';
-import '../screens/general_downloads_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/player_screen.dart';
 import '../screens/playlists_screen.dart';
 import '../screens/radar_screen.dart';
+import '../screens/settings_screen.dart';
 import '../services/permission_service.dart';
 import '../services/radar_service.dart';
+import '../controllers/settings_controller.dart';
 
 class AppRoutes {
   static const home = '/';
-  static const generalDownloads = '/downloads';
   static const radar = '/radar';
   static const playlists = '/playlists';
   static const player = '/player';
+  static const settings = '/settings';
 
   static Route<dynamic> onGenerateRoute(
-    RouteSettings settings, {
+    RouteSettings routeSettings, {
     required LibraryController libraryController,
     required PlayerController playerController,
     required PlaylistController playlistController,
     required RadarService radarService,
     required PermissionService permissionService,
+    required SettingsController settingsController,
   }) {
-    switch (settings.name) {
+    switch (routeSettings.name) {
       case home:
         return MaterialPageRoute(
           builder: (_) => HomeScreen(playerController: playerController),
-        );
-      case generalDownloads:
-        return MaterialPageRoute(
-          builder: (_) => GeneralDownloadsScreen(
-            libraryController: libraryController,
-            playerController: playerController,
-          ),
         );
       case radar:
         return MaterialPageRoute(
           builder: (_) => RadarScreen(
             libraryController: libraryController,
+            playerController: playerController,
             radarService: radarService,
             permissionService: permissionService,
           ),
@@ -55,6 +51,11 @@ class AppRoutes {
             libraryController: libraryController,
             playerController: playerController,
           ),
+        );
+      case settings:
+        return MaterialPageRoute(
+          builder: (_) =>
+              SettingsScreen(settingsController: settingsController),
         );
       case player:
         return PageRouteBuilder(

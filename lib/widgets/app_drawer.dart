@@ -40,12 +40,6 @@ class AppDrawer extends StatelessWidget {
             onTap: () => _navigate(context, AppRoutes.home),
           ),
           ListTile(
-            leading: const Icon(Icons.download),
-            title: const Text('General Downloads'),
-            selected: currentRoute == AppRoutes.generalDownloads,
-            onTap: () => _navigate(context, AppRoutes.generalDownloads),
-          ),
-          ListTile(
             leading: const Icon(Icons.radar),
             title: const Text('Radar'),
             selected: currentRoute == AppRoutes.radar,
@@ -56,6 +50,12 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Playlists'),
             selected: currentRoute == AppRoutes.playlists,
             onTap: () => _navigate(context, AppRoutes.playlists),
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Settings'),
+            selected: currentRoute == AppRoutes.settings,
+            onTap: () => _navigate(context, AppRoutes.settings),
           ),
         ],
       ),

@@ -30,7 +30,7 @@
 
 Orpheus is a Flutter-based local audio player. It is designed around a modular architecture with separated app setup, models, services, controllers, screens, and widgets.
 
-The app currently supports local audio imports, General Downloads/library management, playlist work, playback controls, a mini-player, a full player screen, and a Radar flow for device audio discovery.
+The app currently supports local audio imports, a unified Radar-based library, playlist work, playback controls, a mini-player, a full player screen, device audio discovery, and theme settings.
 
 ---
 
@@ -44,12 +44,6 @@ The app currently supports local audio imports, General Downloads/library manage
 - Keep added tracks after app restart.
 - Handle missing or unavailable files gracefully.
 
-### General Downloads
-
-- View all audio files added to the app.
-- Add more audio files using the floating `+` button.
-- Tap a track to start playback.
-
 ### Player
 
 - Mini-player with current track and progress.
@@ -61,12 +55,18 @@ The app currently supports local audio imports, General Downloads/library manage
 
 ### Radar
 
-- Radar is the device-audio discovery area.
+- Radar is the main audio library and device-audio discovery area.
+- Shows your library tracks at the top.
 - Supports manual audio selection.
 - Native Android MediaStore scanning can be wired through the app’s `orpheus/radar` MethodChannel.
 - Uses Android audio permissions:
   - `READ_MEDIA_AUDIO` for Android 13+
   - `READ_EXTERNAL_STORAGE` for Android 12 and below
+
+### Settings
+
+- Switch between system, light, and dark themes.
+- Theme preference persists after restart.
 
 ### Playlists
 
@@ -83,7 +83,7 @@ The app currently supports local audio imports, General Downloads/library manage
 
 - Home screen navigation hub.
 - Drawer/sidebar navigation.
-- Separate screens for Home, General Downloads, Radar, Playlists, and Player.
+- Separate screens for Home, Radar, Playlists, Settings, and Player.
 
 ---
 
@@ -116,15 +116,17 @@ lib/
     permission_service.dart
     radar_service.dart
     playlist_service.dart
+    settings_service.dart
   controllers/
     library_controller.dart
     player_controller.dart
     playlist_controller.dart
+    settings_controller.dart
   screens/
     home_screen.dart
-    general_downloads_screen.dart
     radar_screen.dart
     playlists_screen.dart
+    settings_screen.dart
     player_screen.dart
   widgets/
     app_drawer.dart

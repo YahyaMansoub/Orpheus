@@ -11,8 +11,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Orpheus'), findsOneWidget);
-    expect(find.text('Playlists'), findsOneWidget);
-    expect(find.text('General Downloads'), findsOneWidget);
     expect(find.text('Radar'), findsOneWidget);
+    expect(find.text('Playlists'), findsOneWidget);
+    expect(find.text('Settings'), findsOneWidget);
   });
 }

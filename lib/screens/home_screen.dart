@@ -22,6 +22,13 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           children: [
             _NavigationCard(
+              icon: Icons.radar,
+              title: 'Radar',
+              subtitle: 'Scan and manage your audio library.',
+              onTap: () => Navigator.of(context).pushNamed(AppRoutes.radar),
+            ),
+            const SizedBox(height: 12),
+            _NavigationCard(
               icon: Icons.queue_music,
               title: 'Playlists',
               subtitle: 'Curated mixes and collections.',
@@ -29,18 +36,10 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _NavigationCard(
-              icon: Icons.download,
-              title: 'General Downloads',
-              subtitle: 'All songs added to your library.',
-              onTap: () =>
-                  Navigator.of(context).pushNamed(AppRoutes.generalDownloads),
-            ),
-            const SizedBox(height: 12),
-            _NavigationCard(
-              icon: Icons.radar,
-              title: 'Radar',
-              subtitle: 'Scan your device for audio files.',
-              onTap: () => Navigator.of(context).pushNamed(AppRoutes.radar),
+              icon: Icons.settings,
+              title: 'Settings',
+              subtitle: 'Theme and app preferences.',
+              onTap: () => Navigator.of(context).pushNamed(AppRoutes.settings),
             ),
           ],
         ),
