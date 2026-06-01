@@ -281,35 +281,8 @@ flutter build apk --debug
 
 ---
 
-## Logo
 
-The current logo direction is the **Angular Ear** concept: a geometric ear built from straight lines.
 
-Recommended asset path:
-
-```text
-assets/branding/orpheus_logo.svg
-```
-
-For Flutter SVG rendering, use `flutter_svg`.
-
-For Android launcher icons, convert the SVG to PNG and generate icons with `flutter_launcher_icons`.
-
----
-
-## Roadmap
-
-- Complete playlist creation and management.
-- Add playlist cover images.
-- Add playlist detail pages.
-- Improve native Android MediaStore scanning.
-- Add album artwork extraction.
-- Add richer audio metadata.
-- Expand widget and unit test coverage.
-- Add integration tests on Android emulator.
-- Polish app theme and animations.
-
----
 
 ## License
 
