@@ -29,6 +29,13 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _NavigationCard(
+              icon: Icons.explore,
+              title: 'Discover',
+              subtitle: 'Find new music on Jamendo.',
+              onTap: () => Navigator.of(context).pushNamed(AppRoutes.discover),
+            ),
+            const SizedBox(height: 12),
+            _NavigationCard(
               icon: Icons.queue_music,
               title: 'Playlists',
               subtitle: 'Curated mixes and collections.',

@@ -7,8 +7,11 @@ import '../controllers/library_controller.dart';
 import '../controllers/playlist_controller.dart';
 import '../controllers/player_controller.dart';
 import '../controllers/settings_controller.dart';
+import '../controllers/discover_controller.dart';
 import '../services/audio_library_service.dart';
 import '../services/audio_player_service.dart';
+import '../services/download_service.dart';
+import '../services/jamendo_api_service.dart';
 import '../services/playlist_service.dart';
 import '../services/permission_service.dart';
 import '../services/radar_service.dart';
@@ -35,6 +38,9 @@ class _OrpheusAppState extends State<OrpheusApp> {
   late final PermissionService _permissionService;
   late final SettingsService _settingsService;
   late final SettingsController _settingsController;
+  late final JamendoApiService _jamendoApiService;
+  late final DownloadService _downloadService;
+  late final DiscoverController _discoverController;
 
   @override
   void initState() {
@@ -49,6 +55,13 @@ class _OrpheusAppState extends State<OrpheusApp> {
     _permissionService = PermissionService();
     _settingsService = SettingsService(widget.prefs);
     _settingsController = SettingsController(_settingsService)..loadSettings();
+    _jamendoApiService = JamendoApiService();
+    _downloadService = DownloadService();
+    _discoverController = DiscoverController(
+      apiService: _jamendoApiService,
+      downloadService: _downloadService,
+      libraryController: _libraryController,
+    );
   }
 
   @override
@@ -57,6 +70,7 @@ class _OrpheusAppState extends State<OrpheusApp> {
     _libraryController.dispose();
     _playlistController.dispose();
     _settingsController.dispose();
+    _discoverController.dispose();
     _playerService.dispose();
     super.dispose();
   }
@@ -84,6 +98,7 @@ class _OrpheusAppState extends State<OrpheusApp> {
           initialRoute: AppRoutes.home,
           onGenerateRoute: (settings) => AppRoutes.onGenerateRoute(
             settings,
+            discoverController: _discoverController,
             libraryController: _libraryController,
             playerController: _playerController,
             playlistController: _playlistController,
