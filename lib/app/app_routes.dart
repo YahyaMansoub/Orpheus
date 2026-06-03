@@ -2,10 +2,12 @@
 
 import 'package:flutter/material.dart';
 
+import '../controllers/discover_controller.dart';
 import '../controllers/library_controller.dart';
 import '../controllers/playlist_controller.dart';
 import '../controllers/player_controller.dart';
 import '../screens/home_screen.dart';
+import '../screens/discover_screen.dart';
 import '../screens/player_screen.dart';
 import '../screens/playlists_screen.dart';
 import '../screens/radar_screen.dart';
@@ -17,12 +19,14 @@ import '../controllers/settings_controller.dart';
 class AppRoutes {
   static const home = '/';
   static const radar = '/radar';
+  static const discover = '/discover';
   static const playlists = '/playlists';
   static const player = '/player';
   static const settings = '/settings';
 
   static Route<dynamic> onGenerateRoute(
     RouteSettings routeSettings, {
+    required DiscoverController discoverController,
     required LibraryController libraryController,
     required PlayerController playerController,
     required PlaylistController playlistController,
@@ -42,6 +46,13 @@ class AppRoutes {
             playerController: playerController,
             radarService: radarService,
             permissionService: permissionService,
+          ),
+        );
+      case discover:
+        return MaterialPageRoute(
+          builder: (_) => DiscoverScreen(
+            discoverController: discoverController,
+            playerController: playerController,
           ),
         );
       case playlists:

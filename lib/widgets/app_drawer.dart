@@ -46,6 +46,12 @@ class AppDrawer extends StatelessWidget {
             onTap: () => _navigate(context, AppRoutes.radar),
           ),
           ListTile(
+            leading: const Icon(Icons.explore),
+            title: const Text('Discover'),
+            selected: currentRoute == AppRoutes.discover,
+            onTap: () => _navigate(context, AppRoutes.discover),
+          ),
+          ListTile(
             leading: const Icon(Icons.queue_music),
             title: const Text('Playlists'),
             selected: currentRoute == AppRoutes.playlists,
