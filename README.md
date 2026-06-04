@@ -284,6 +284,8 @@ flutter build apk --debug
 ---
 
 
+i'll need to test this out more and also expand the features as i think there still work to be done right there. 
+
 
 
 ## License
